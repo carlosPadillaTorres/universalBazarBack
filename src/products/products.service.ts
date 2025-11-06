@@ -17,11 +17,23 @@ export class ProductsService {
     return 'This action adds a new product';
   }
 
-  findAll() {
-    const products = this.productModel.find().exec();
-    if (!products) {
-      throw new BadRequestException('No products found');
+  async findAll() {
+    console.log('🔍 Buscando productos en la base de datos...');
+    console.log('📋 Modelo:', this.productModel.modelName);
+    console.log('🗃️ Colección:', this.productModel.collection.name);
+    
+    const products = await this.productModel.find().exec();
+    console.log(`📦 Encontrados ${products.length} productos`);
+    
+    if (products.length > 0) {
+      console.log('📝 Primer producto:', JSON.stringify(products[0], null, 2));
     }
+    
+    if (!products || products.length === 0) {
+      console.log('⚠️ No se encontraron productos');
+      throw new BadRequestException('No products found in database');
+    }
+    
     return products;
   }
   
