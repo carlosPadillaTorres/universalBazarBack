@@ -1,60 +1,24 @@
 services:
-  database_univesal_bazar:
-    image: mongo:latest
-    environment:  
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-      MONGO_LOG_LEVEL: "warning" 
-    command: ["mongod", "--quiet"]
+  universal_bazar:
+    build:
+      context: .
+      dockerfile: ${DOCKER_FILE}
+    image: ${DOCKER_IMAGE}
+    env_file: ${ENV_FILE}
+    restart: unless-stopped
     ports:
-      - "${PORT_DB}:${PORT_DB}"
+        # Puerto del host: Puerto del contenedor
+      - "${APP_PORT}:${APP_PORT}"
     volumes:
-      - database_bazar_data:/data/db
+      - ./:/app
+      - node_modules:/app/node_modules
+    command: >
+      sh -c "yarn install && nodemon"
     networks:
       - app_net
-
-    healthcheck:
-      # No se indica la base de datos porque si no existe, la crea
-      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok"]
-      interval: 20s
-      timeout: 10s
-      retries: 30
-      start_period: 15s
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - ${CLIENT_MONGO_HOST_PORT}:8081
-    environment:
-      # Cliente mogno accesible a través de la URL: http://localhost:${CLIENT_MONGO_HOST_PORT}
-      ME_CONFIG_MONGODB_URL: ${DATABASE_URL}
-      ME_CONFIG_BASICAUTH_ENABLED: true
-      ME_CONFIG_BASICAUTH_USERNAME: ${BASICAUTH_USERNAME_CLIENT_MONGO}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${BASICAUTH_PASSWORD_CLIENT_MONGO}
-    networks:
-      - app_net
-
-  init-db:
-    image: mongo
-    depends_on:
-      database_lumina_mo_tool_hub:
-        condition: service_healthy
-    volumes:
-      - ./scripts:/scripts
-    working_dir: /scripts
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-    entrypoint: ["/bin/bash", "-c", "./init-products-data.sh"]
-    networks:
-      - app_net
-
 networks:
   app_net:
     name: ${NETWORK_NAME}
     external: true
-
 volumes:
-  database_bazar_data:
+  node_modules: {}

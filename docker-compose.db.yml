@@ -8,7 +8,7 @@ services:
       MONGO_LOG_LEVEL: "warning" 
     command: ["mongod", "--quiet"]
     ports:
-      - "${PORT_DB}:${PORT_DB}"
+      - "${PORT_DB_HOST}:${PORT_DB_DOCKER}"
     volumes:
       - database_bazar_data:/data/db
     networks:
@@ -39,7 +39,7 @@ services:
   init-db:
     image: mongo
     depends_on:
-      database_lumina_mo_tool_hub:
+      database_univesal_bazar:
         condition: service_healthy
     volumes:
       - ./scripts:/scripts
@@ -47,7 +47,7 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-    entrypoint: ["/bin/bash", "-c", "./init-products-data.sh"]
+    entrypoint: ["/bin/bash", "-c", "./scripts/init-products-data.sh"]
     networks:
       - app_net
 
