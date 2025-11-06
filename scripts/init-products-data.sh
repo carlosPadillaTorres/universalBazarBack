@@ -3,8 +3,8 @@
 echo "🚀 Iniciando proceso de carga de productos..."
 
 # Verificar que existen las variables de entorno necesarias
-if [ -z "${DATABASE_URL}" ]; then
-  echo "❌ ERROR: DATABASE_URL no está definida"
+if [ -z "${MONGO_ATLAS_URL}" ]; then
+  echo "❌ ERROR: MONGO_ATLAS_URL no está definida"
   exit 1
 fi
 
@@ -24,14 +24,14 @@ if [ ! -f "${PRODUCTS_JSON}" ]; then
 fi
 
 echo "📁 Archivo de productos encontrado: ${PRODUCTS_JSON}"
-echo "🔌 Conectando a: ${DATABASE_URL}"
+echo "🔌 Conectando a: ${MONGO_ATLAS_URL}"
 echo "📊 Base de datos: ${MONGO_INITDB_DATABASE}"
 
 # Leer el contenido del JSON y escaparlo para poder pasarlo a mongosh
 PRODUCTS_JSON_CONTENT=$(cat "${PRODUCTS_JSON}" | jq -c .)
 
 # Ejecutar el script de MongoDB
-mongosh "${DATABASE_URL}" <<EOF
+mongosh "${MONGO_ATLAS_URL}" <<EOF
 use ${MONGO_INITDB_DATABASE}
 
 // Verificar si la base de datos está vacía
