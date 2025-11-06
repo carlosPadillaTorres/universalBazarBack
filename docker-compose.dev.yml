@@ -1,0 +1,28 @@
+services:
+  universal_bazar:
+    build:
+      context: .
+      dockerfile: ${DOCKER_FILE}
+    image: ${DOCKER_IMAGE}
+    env_file: ${ENV_FILE}
+    restart: unless-stopped
+    ports:
+        # Puerto del host: Puerto del contenedor
+      - "${APP_PORT}:${APP_PORT}"
+    volumes:
+      - ./src:/app/src
+      - ./nodemon.json:/app/nodemon.json
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./tsconfig.build.json:/app/tsconfig.build.json
+      - ./nest-cli.json:/app/nest-cli.json
+      - node_modules:/app/node_modules
+    command: >
+      sh -c "yarn install && nodemon"
+    networks:
+      - app_net
+networks:
+  app_net:
+    name: ${NETWORK_NAME}
+    external: true
+volumes:
+  node_modules: {}

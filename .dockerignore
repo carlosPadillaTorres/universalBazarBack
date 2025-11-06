@@ -1,0 +1,30 @@
+# Ignorar node_modules en la raíz 
+node_modules
+
+# Ignorar carpetas de build
+dist
+build
+*.tsbuildinfo
+
+# Archivos de git
+.git
+.gitignore
+
+# Package manager lock files
+package-lock.json
+
+# Archivos de test y coverage
+coverage
+test
+*.spec.ts
+
+# Otros     
+.vscode
+*.log
+.env
+.env.*
+temp
+*.md
+.dockerignore
+Dockerfile*
+docker-compose*

@@ -1,0 +1,22 @@
+FROM node:20-alpine3.19 AS base
+
+WORKDIR /app
+
+# copy source dependencies
+COPY package*.json yarn.lock ./ 
+RUN yarn install
+                                #nodemon solo para desarrollo
+RUN yarn global add nodemon @nestjs/cli  
+
+COPY . .
+
+EXPOSE 1211
+
+# Use npm run dev for hot reload
+CMD [ "nest", "start" , "--watch"]
+
+# ENTRYPOINT para comandos estáticos
+#ENTRYPOINT [ "nest", "start" ] 
+
+# cmd para comandos dinámicos
+#CMD [ "--watch" ] 
