@@ -13,7 +13,7 @@ export class ProductsController {
 @Get('byId/:id')
  async  findOneById(@Param('id') id: string) {
   try {
-    await this.productsService.findOne(+id);
+    return await this.productsService.findOne(+id);
   } catch (error) {
     throw new HttpException({
       status: HttpStatus.FORBIDDEN,
@@ -28,7 +28,7 @@ export class ProductsController {
   @Get('byName/:name')
   async findOneByName(@Param('name') name: string) {
     try {
-      await this.productsService.findOneByName(name);
+      return await this.productsService.findOneByName(name);
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.FORBIDDEN,
@@ -47,9 +47,9 @@ export class ProductsController {
   @Get('sales')
   @ApiOperation({ summary: ' Get all registered products' })
   @ApiResponse({ status: 200, description: 'Returns the list of products' })
-  findAllSales() {
+  async findAllSales() {
     try {
-      return this.productsService.findAll();
+      return await this.productsService.findAll();
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.FORBIDDEN,
