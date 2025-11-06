@@ -10,7 +10,11 @@ services:
         # Puerto del host: Puerto del contenedor
       - "${APP_PORT}:${APP_PORT}"
     volumes:
-      - ./:/app
+      - ./src:/app/src
+      - ./nodemon.json:/app/nodemon.json
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./tsconfig.build.json:/app/tsconfig.build.json
+      - ./nest-cli.json:/app/nest-cli.json
       - node_modules:/app/node_modules
     command: >
       sh -c "yarn install && nodemon"

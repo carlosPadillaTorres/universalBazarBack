@@ -1,51 +1,97 @@
 #!/bin/bash
-set -e
 
-echo "Insertando producto de ejemplo usando mongosh..."
+echo "🚀 Iniciando proceso de carga de productos..."
 
-# Requiere que DATABASE_URL y MONGO_INITDB_DATABASE estén en el entorno
+# Verificar que existen las variables de entorno necesarias
+if [ -z "${DATABASE_URL}" ]; then
+  echo "❌ ERROR: DATABASE_URL no está definida"
+  exit 1
+fi
+
+if [ -z "${MONGO_INITDB_DATABASE}" ]; then
+  echo "❌ ERROR: MONGO_INITDB_DATABASE no está definida"
+  exit 1
+fi
+
+# Obtener la ruta del directorio del script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PRODUCTS_JSON="${SCRIPT_DIR}/products.json"
+
+# Verificar que existe el archivo products.json
+if [ ! -f "${PRODUCTS_JSON}" ]; then
+  echo "❌ ERROR: No se encontró el archivo products.json en ${PRODUCTS_JSON}"
+  exit 1
+fi
+
+echo "📁 Archivo de productos encontrado: ${PRODUCTS_JSON}"
+echo "🔌 Conectando a: ${DATABASE_URL}"
+echo "📊 Base de datos: ${MONGO_INITDB_DATABASE}"
+
+# Leer el contenido del JSON y escaparlo para poder pasarlo a mongosh
+PRODUCTS_JSON_CONTENT=$(cat "${PRODUCTS_JSON}" | jq -c .)
+
+# Ejecutar el script de MongoDB
 mongosh "${DATABASE_URL}" <<EOF
 use ${MONGO_INITDB_DATABASE}
 
-const sku = "RCH45Q1A";
-const id = 1;
+// Verificar si la base de datos está vacía
+const count = db.products.countDocuments();
+print("📊 Productos actuales en la base de datos:", count);
 
-// Buscar por sku o id para no duplicar
-const existing = db.products.findOne({ \$or: [{ sku: sku }, { id: id }] });
-if (existing) {
-  print("Producto ya existe con _id:", existing._id);
-} else {
-  const product = {
-    id: id,
-    title: "Essence Mascara Lash Princess",
-    description: "The Essence Mascara Lash Princess is a popular mascara known for its volumizing and lengthening effects. Achieve dramatic lashes with this long-lasting and cruelty-free formula.",
-    category: "beauty",
-    price: 9.99,
-    discountPercentage: 7.17,
-    rating: 4.94,
-    stock: 5,
-    tags: ["beauty", "mascara"],
-    brand: "Essence",
-    sku: sku,
-    weight: 2,
-    dimensions: { width: 23.17, height: 14.43, depth: 28.01 },
-    warrantyInformation: "1 month warranty",
-    shippingInformation: "Ships in 1 month",
-    availabilityStatus: "Low Stock",
-    reviews: [
-      { rating: 2, comment: "Very unhappy with my purchase!", date: new Date("2024-05-23T08:56:21.618Z"), reviewerName: "John Doe", reviewerEmail: "john.doe@x.dummyjson.com" },
-      { rating: 2, comment: "Not as described!", date: new Date("2024-05-23T08:56:21.618Z"), reviewerName: "Nolan Gonzalez", reviewerEmail: "nolan.gonzalez@x.dummyjson.com" },
-      { rating: 5, comment: "Very satisfied!", date: new Date("2024-05-23T08:56:21.618Z"), reviewerName: "Scarlett Wright", reviewerEmail: "scarlett.wright@x.dummyjson.com" }
-    ],
-    returnPolicy: "30 days return policy",
-    minimumOrderQuantity: 24,
-    meta: { createdAt: new Date("2024-05-23T08:56:21.618Z"), updatedAt: new Date("2024-05-23T08:56:21.618Z"), barcode: "9164035109868", qrCode: "https://assets.dummyjson.com/public/qr-code.png" },
-    images: ["https://cdn.dummyjson.com/products/images/beauty/Essence%20Mascara%20Lash%20Princess/1.png"],
-    thumbnail: "https://cdn.dummyjson.com/products/images/beauty/Essence%20Mascara%20Lash%20Princess/thumbnail.png"
-  };
-
-  const result = db.products.insertOne(product);
-  if (result.insertedId) print("✅ Producto insertado con _id:", result.insertedId);
-  else print("❌ Error al insertar producto");
+if (count > 0) {
+  print("⚠️  La base de datos ya contiene", count, "productos. No se realizará la inserción.");
+  print("💡 Si deseas reiniciar los datos, elimina la colección primero con: db.products.drop()");
+  quit(0);
 }
+
+print("✨ Base de datos vacía. Procediendo con la inserción de productos...");
+
+// Parsear los datos de productos
+const productsData = ${PRODUCTS_JSON_CONTENT};
+
+print("📦 Total de productos a insertar:", productsData.length);
+
+// Procesar y preparar los productos
+const productsToInsert = productsData.map(product => {
+  // Convertir fechas en el meta si existen
+  if (product.meta) {
+    if (product.meta.createdAt) product.meta.createdAt = new Date(product.meta.createdAt);
+    if (product.meta.updatedAt) product.meta.updatedAt = new Date(product.meta.updatedAt);
+  }
+  
+  // Convertir fechas en las reviews si existen
+  if (product.reviews && Array.isArray(product.reviews)) {
+    product.reviews = product.reviews.map(review => {
+      if (review.date) review.date = new Date(review.date);
+      return review;
+    });
+  }
+  
+  return product;
+});
+
+// Insertar todos los productos
+try {
+  const result = db.products.insertMany(productsToInsert, { ordered: false });
+  print("✅ Productos insertados exitosamente:", Object.keys(result.insertedIds).length);
+  
+  // Verificar la inserción
+  const finalCount = db.products.countDocuments();
+  print("🎉 Total de productos en la base de datos:", finalCount);
+  
+  // Mostrar algunos productos de ejemplo
+  print("\n📋 Productos de ejemplo insertados:");
+  db.products.find().limit(3).forEach(p => {
+    print("  - ID:", p.id, "| SKU:", p.sku, "| Título:", p.title, "| Categoría:", p.category);
+  });
+  
+  print("\n✅ Proceso completado exitosamente");
+} catch (error) {
+  print("❌ Error al insertar productos:", error.message);
+  quit(1);
+}
+
 EOF
+
+echo ""
+echo "🏁 Script finalizado"

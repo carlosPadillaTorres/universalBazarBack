@@ -83,4 +83,4 @@ export const ProductSchema = SchemaFactory.createForClass(Product);
 
 // Text index for search on title + description
 ProductSchema.index({ title: 'text', description: 'text' });
-ProductSchema.index({ sku: 1 }, { unique: true, sparse: true });
+//ProductSchema.index({ sku: 1 }, { unique: true, sparse: true });

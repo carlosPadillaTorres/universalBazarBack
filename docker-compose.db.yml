@@ -1,6 +1,7 @@
 services:
   database_univesal_bazar:
     image: mongo:latest
+    container_name: mongo-univesal-bazar
     environment:  
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
@@ -24,6 +25,7 @@ services:
 
   mongo-express:
     image: mongo-express
+    container_name: mongo-express-univesal-bazar
     restart: always
     ports:
       - ${CLIENT_MONGO_HOST_PORT}:8081
@@ -47,7 +49,7 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-    entrypoint: ["/bin/bash", "-c", "./scripts/init-products-data.sh"]
+    entrypoint: ["/bin/bash", "-c", "./init-products-data.sh"]
     networks:
       - app_net
 
