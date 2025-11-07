@@ -1,0 +1,17 @@
+{
+  "product": {
+    "productId": 1,
+    "title": "Essence Mascara Lash Princess",
+    "price": 9.99,
+    "sku": "RCH45Q1A"
+  },
+  "quantity": 2,
+  "buyer": {
+    "name": "Carlos Padilla",
+    "email": "carlos.padilla@example.com",
+    "address": "Calle Falsa 123, Ciudad"
+  },
+  "totalPrice": 19.98,
+  "date": "2025-11-07T10:00:00.000Z",
+  "status": "created"
+}
