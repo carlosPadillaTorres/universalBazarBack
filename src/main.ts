@@ -5,7 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   // Render usa la variable PORT, no APP_PORT
-  const port = process.env.PORT || process.env.APP_PORT || 3000;
+  const port = process.env.PORT || process.env.APP_PORT || 1211;
   
   const app = await NestFactory.create(AppModule);
 
