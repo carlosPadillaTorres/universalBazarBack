@@ -2,8 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpExce
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Products')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
@@ -40,8 +41,32 @@ export class ProductsController {
   }
 
   @Post('create')
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  @ApiOperation({ summary: 'Create a new product' })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Product created successfully' 
+  })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Bad Request - Validation failed or duplicate values' 
+  })
+  async create(@Body() createProductDto: CreateProductDto) {
+    try {
+      return await this.productsService.create(createProductDto);
+    } catch (error) {
+      console.error('🚨 Controller error:', error.message);
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: error.message || 'Failed to create product',
+          details: error.response || null,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        }
+      );
+    }
   }
 
   @Get('sales')

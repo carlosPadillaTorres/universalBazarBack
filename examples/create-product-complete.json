@@ -1,0 +1,49 @@
+{
+  "title": "Premium Wireless Headphones",
+  "description": "High-quality wireless headphones with noise cancellation and 30-hour battery life. Perfect for music lovers and professionals.",
+  "category": "electronics",
+  "price": 199.99,
+  "discountPercentage": 15,
+  "rating": 4.5,
+  "stock": 100,
+  "tags": ["electronics", "audio", "wireless", "headphones"],
+  "brand": "AudioPro",
+  "sku": "AP-WH-2024-001",
+  "weight": 250,
+  "dimensions": {
+    "width": 20.5,
+    "height": 18.3,
+    "depth": 8.5
+  },
+  "warrantyInformation": "2 year warranty",
+  "shippingInformation": "Ships in 2-3 business days",
+  "availabilityStatus": "In Stock",
+  "reviews": [
+    {
+      "rating": 5,
+      "comment": "Excellent sound quality!",
+      "date": "2025-11-01T10:30:00.000Z",
+      "reviewerName": "John Smith",
+      "reviewerEmail": "john.smith@example.com"
+    },
+    {
+      "rating": 4,
+      "comment": "Great product, very comfortable",
+      "date": "2025-11-03T14:20:00.000Z",
+      "reviewerName": "Maria Garcia",
+      "reviewerEmail": "maria.garcia@example.com"
+    }
+  ],
+  "returnPolicy": "30 days return policy",
+  "minimumOrderQuantity": 1,
+  "meta": {
+    "barcode": "1234567890123",
+    "qrCode": "https://example.com/qr/AP-WH-2024-001.png"
+  },
+  "images": [
+    "https://example.com/images/headphones-1.jpg",
+    "https://example.com/images/headphones-2.jpg",
+    "https://example.com/images/headphones-3.jpg"
+  ],
+  "thumbnail": "https://example.com/images/headphones-thumb.jpg"
+}

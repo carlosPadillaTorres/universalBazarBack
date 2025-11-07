@@ -1,0 +1,7 @@
+{
+  "title": "Test Product",
+  "description": "This is a test product created via API",
+  "category": "electronics",
+  "price": 99.99,
+  "stock": 50
+}
